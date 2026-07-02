@@ -1,3 +1,10 @@
+class ProgramNode {
+    constructor(statements) {
+        this.type = "Program";
+        this.statements = statements;
+    }
+}
+
 class NumberNode {
 
     constructor(value) {
@@ -53,6 +60,8 @@ class AssignmentNode {
 }
 
 module.exports = {
+
+    ProgramNode,
 
     NumberNode,
 

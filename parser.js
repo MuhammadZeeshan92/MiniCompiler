@@ -1,5 +1,5 @@
 const { TokenType } = require("./token");
-const { NumberNode, IdentifierNode, BinaryExpressionNode, AssignmentNode } = require("./ast");
+const { ProgramNode, NumberNode, IdentifierNode, BinaryExpressionNode, AssignmentNode } = require("./ast");
 
 class Parser {
 
@@ -98,9 +98,32 @@ class Parser {
     }
 
     parse() {
-        const node = this.statement();
-        this.eat(TokenType.EOF);
-        return node;
+        const statements = [];
+        
+        while (this.currentToken && this.currentToken.type !== TokenType.EOF) {
+            // Consume any leading or redundant separators
+            if (this.currentToken.type === TokenType.SEMICOLON) {
+                this.eat(TokenType.SEMICOLON);
+                continue;
+            }
+            
+            statements.push(this.statement());
+            
+            // Enforce that a statement is followed by a separator or EOF
+            if (this.currentToken && this.currentToken.type !== TokenType.EOF) {
+                if (this.currentToken.type === TokenType.SEMICOLON) {
+                    this.eat(TokenType.SEMICOLON);
+                } else {
+                    throw new Error(`Syntax Error: Expected newline or ';' after expression, but found ${this.currentToken.type}`);
+                }
+            }
+        }
+        
+        if (this.currentToken) {
+            this.eat(TokenType.EOF);
+        }
+        
+        return new ProgramNode(statements);
     }
 }
 

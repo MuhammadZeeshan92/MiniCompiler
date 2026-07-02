@@ -4,6 +4,7 @@ const TokenType = {
   IDENTIFIER: "IDENTIFIER",
 
   ASSIGN: "ASSIGN",
+  SEMICOLON: "SEMICOLON",
 
   PLUS: "PLUS",
   MINUS: "MINUS",

@@ -28,7 +28,7 @@ class Lexer {
 
     skipWhitespace() {
 
-        while (this.currentChar !== null && /\s/.test(this.currentChar)) {
+        while (this.currentChar !== null && /[ \t\r]/.test(this.currentChar)) {
 
             this.advance();
 
@@ -84,9 +84,16 @@ class Lexer {
 
         while (this.currentChar !== null) {
 
-            // Ignore spaces
-            if (/\s/.test(this.currentChar)) {
+            // Ignore spaces and tabs
+            if (/[ \t\r]/.test(this.currentChar)) {
                 this.skipWhitespace();
+                continue;
+            }
+
+            // Semicolons and Newlines
+            if (this.currentChar === '\n' || this.currentChar === ';') {
+                tokens.push(new Token(TokenType.SEMICOLON, this.currentChar === '\n' ? '\\n' : ';'));
+                this.advance();
                 continue;
             }
 

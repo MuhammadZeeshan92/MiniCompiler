@@ -8,7 +8,9 @@ function formatAST(node, prefix = "", isTail = true) {
     let result = "";
     
     let nodeStr = "";
-    if (node.type === "Assignment") {
+    if (node.type === "Program") {
+        nodeStr = "Program";
+    } else if (node.type === "Assignment") {
         nodeStr = "Assignment (=)";
     } else if (node.type === "BinaryExpression") {
         nodeStr = `BinaryExpression (${node.operator})`;
@@ -22,7 +24,11 @@ function formatAST(node, prefix = "", isTail = true) {
     
     let childPrefix = prefix + (isTail ? "    " : "│   ");
 
-    if (node.type === "Assignment") {
+    if (node.type === "Program") {
+        for (let i = 0; i < node.statements.length; i++) {
+            result += formatAST(node.statements[i], childPrefix, i === node.statements.length - 1);
+        }
+    } else if (node.type === "Assignment") {
         result += formatAST(node.identifier, childPrefix, false);
         result += formatAST(node.expression, childPrefix, true);
     } else if (node.type === "BinaryExpression") {
