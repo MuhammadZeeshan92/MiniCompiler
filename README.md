@@ -35,11 +35,15 @@ A simple and educational implementation of a custom lexer and recursive descent 
    git clone https://github.com/MuhammadZeeshan92/MiniCompiler.git
    cd MiniCompiler
    ```
-2. Start the native server (no extra npm dependencies required):
+2. Install the project dependencies:
+   ```bash
+   npm i
+   ```
+3. Start the server:
    ```bash
    node server.js
    ```
-3. Open your browser and navigate to `http://localhost:3000` to interact with the visual compiler interface.
+4. Open your browser and navigate to `http://localhost:3000` to interact with the visual compiler interface.
 
 ### Running via CLI
 
