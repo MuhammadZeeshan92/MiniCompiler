@@ -4,10 +4,11 @@ A simple and educational implementation of a custom lexer and recursive descent 
 
 ## Features
 
-- **Lexical Analysis (Lexer)**: Scans source code and converts it into a sequence of meaningful tokens (`NUMBER`, `IDENTIFIER`, `ASSIGN`, `PLUS`, `MINUS`, `MULTIPLY`, `DIVIDE`, `LPAREN`, `RPAREN`, `EOF`).
+- **Lexical Analysis (Lexer)**: Scans source code and converts it into a sequence of meaningful tokens (`NUMBER`, `IDENTIFIER`, `ASSIGN`, `PLUS`, `MINUS`, `MULTIPLY`, `DIVIDE`, `LPAREN`, `RPAREN`, `SEMICOLON`, `EOF`).
 - **Syntax Analysis (Parser)**: Uses a recursive descent parser to process the tokens and build a structural Abstract Syntax Tree (AST).
+- **Semantic Analysis**: Analyzes the AST for logical correctness, such as ensuring variables are defined before they are used in expressions.
 - **Mathematical Expressions**: Supports operator precedence (e.g., multiplication and division before addition and subtraction) and parenthesis grouping.
-- **Assignment Statements**: Capable of parsing variable assignments (e.g., `x = 5 + 3 * (2 - 1)`).
+- **Multiple Statements & Assignments**: Capable of parsing a sequence of variable assignments (e.g., `x = 5; y = x + 3;`).
 - **Interactive Web IDE**: A sleek, dark-themed UI to enter code and dynamically view generated tokens and AST representations without needing the CLI.
 - **AST Visualization**: Provides a clear and formatted tree view of the parsed AST structure both in the terminal and on the web UI.
 
@@ -15,7 +16,8 @@ A simple and educational implementation of a custom lexer and recursive descent 
 
 - `lexer.js`: Contains the `Lexer` class responsible for breaking down the input string into a list of tokens.
 - `parser.js`: Contains the `Parser` class that validates the sequence of tokens and constructs the AST.
-- `ast.js`: Defines the structure of the AST nodes (`NumberNode`, `IdentifierNode`, `BinaryExpressionNode`, `AssignmentNode`).
+- `semantic.js`: Defines the `SemanticAnalyzer` class to ensure variables are initialized prior to usage.
+- `ast.js`: Defines the structure of the AST nodes (`ProgramNode`, `NumberNode`, `IdentifierNode`, `BinaryExpressionNode`, `AssignmentNode`).
 - `token.js`: Defines the `Token` class and `TokenType` constants used by the lexer and parser.
 - `main.js`: The CLI entry point that ties the lexer and parser together, executing them against sample input and printing the results.
 - `server.js`: A native Node.js HTTP server that exposes the compiler as an API to the web frontend.
@@ -54,44 +56,52 @@ node main.js
 
 ## Example Output
 
-When running the compiler with a valid expression like `x = 5 + 3 * (2 - 1)`, the lexer generates the tokens and the parser constructs the following AST visualization:
+When running the compiler with a valid program like `x = 5; y = x + 3;`, the lexer generates the tokens, the parser constructs the AST, and the semantic analyzer verifies the code:
 
 ```text
 ===== LEXER OUTPUT =====
 IDENTIFIER : x
 ASSIGN : =
 NUMBER : 5
+SEMICOLON : ;
+IDENTIFIER : y
+ASSIGN : =
+IDENTIFIER : x
 PLUS : +
 NUMBER : 3
-MULTIPLY : *
-LPAREN : (
-NUMBER : 2
-MINUS : -
-NUMBER : 1
-RPAREN : )
+SEMICOLON : ;
 EOF : null
 
 ===== PARSER OUTPUT =====
 Syntax is Valid - Parsing Completed Successfully!
 
+===== SEMANTIC ANALYSIS =====
+Semantic Analysis Passed - Variables are used correctly!
+
 ===== AST TREE =====
-├── Assignment (=)
-│   ├── Identifier (x)
-│   └── BinaryExpression (+)
-│       ├── Number (5)
-│       └── BinaryExpression (*)
-│           ├── Number (3)
-│           └── BinaryExpression (-)
-│               ├── Number (2)
-│               └── Number (1)
+└── Program
+    ├── Assignment (=)
+    │   ├── Identifier (x)
+    │   └── Number (5)
+    └── Assignment (=)
+        ├── Identifier (y)
+        └── BinaryExpression (+)
+            ├── Identifier (x)
+            └── Number (3)
 ```
 
 ## Error Handling
 
-If you provide an invalid input, the compiler will gracefully display descriptive syntax errors in the terminal or on the web IDE:
+If you provide invalid input, the compiler will gracefully display descriptive errors based on the compilation stage (Syntax Error or Semantic Error):
+
 ```text
-===== PARSER OUTPUT =====
+===== ERROR OUTPUT =====
 Syntax Error: Unexpected token PLUS
+```
+
+```text
+===== SEMANTIC ANALYSIS =====
+Semantic Error: Variable 'z' is used before being defined.
 ```
 
 ## License

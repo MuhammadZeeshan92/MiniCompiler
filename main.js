@@ -1,11 +1,14 @@
 const Lexer = require("./lexer");
 const Parser = require("./parser");
+const SemanticAnalyzer = require("./semantic");
 
 function formatAST(node, prefix = "", isTail = true) {
     let result = "";
     
     let nodeStr = "";
-    if (node.type === "Assignment") {
+    if (node.type === "Program") {
+        nodeStr = "Program";
+    } else if (node.type === "Assignment") {
         nodeStr = "Assignment (=)";
     } else if (node.type === "BinaryExpression") {
         nodeStr = `BinaryExpression (${node.operator})`;
@@ -19,7 +22,11 @@ function formatAST(node, prefix = "", isTail = true) {
     
     let childPrefix = prefix + (isTail ? "    " : "│   ");
 
-    if (node.type === "Assignment") {
+    if (node.type === "Program") {
+        for (let i = 0; i < node.statements.length; i++) {
+            result += formatAST(node.statements[i], childPrefix, i === node.statements.length - 1);
+        }
+    } else if (node.type === "Assignment") {
         result += formatAST(node.identifier, childPrefix, false);
         result += formatAST(node.expression, childPrefix, true);
     } else if (node.type === "BinaryExpression") {
@@ -30,7 +37,7 @@ function formatAST(node, prefix = "", isTail = true) {
     return result;
 }
 
-const input = "x = +n2 ";
+const input = "x = 5; y = x + 3;";
 
 try {
 
@@ -48,7 +55,13 @@ try {
     const parser = new Parser(tokens);
 
     const ast = parser.parse();
-    console.log("Syntax is Valid - Parsing Completed Successfully!\n");
+    console.log("Syntax is Valid - Parsing Completed Successfully!");
+    
+    console.log("\n===== SEMANTIC ANALYSIS =====");
+    const analyzer = new SemanticAnalyzer();
+    analyzer.analyze(ast);
+    console.log("Semantic Analysis Passed - Variables are used correctly!\n");
+
     console.log("===== AST TREE =====");
     console.log(formatAST(ast));
 

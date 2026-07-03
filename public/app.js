@@ -60,12 +60,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             } else {
-                statusIndicator.textContent = 'Syntax Error';
+                const isSemantic = data.error.includes('Semantic Error');
+                statusIndicator.textContent = isSemantic ? 'Semantic Error' : 'Syntax Error';
                 statusIndicator.className = 'status-indicator error';
                 
                 terminal.innerHTML = `
                     <div class="terminal-section">
-                        <div class="terminal-title">===== PARSER OUTPUT =====</div>
+                        <div class="terminal-title">===== ${isSemantic ? 'SEMANTIC ANALYSIS' : 'PARSER OUTPUT'} =====</div>
                         <div class="terminal-error">${data.error}</div>
                     </div>
                 `;

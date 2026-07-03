@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const Lexer = require('./lexer');
 const Parser = require('./parser');
+const SemanticAnalyzer = require('./semantic');
 
 function formatAST(node, prefix = "", isTail = true) {
     let result = "";
@@ -62,6 +63,9 @@ const server = http.createServer((req, res) => {
                 const parser = new Parser(tokens);
                 const ast = parser.parse();
                 
+                const analyzer = new SemanticAnalyzer();
+                analyzer.analyze(ast);
+                
                 const astOutput = formatAST(ast);
                 
                 res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -69,7 +73,7 @@ const server = http.createServer((req, res) => {
                     success: true,
                     tokens: tokenOutput,
                     ast: astOutput,
-                    message: "Syntax is Valid - Parsing Completed Successfully!"
+                    message: "Syntax is Valid - Parsing Completed Successfully!\nSemantic Analysis Passed!"
                 }));
             } catch (error) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
